@@ -157,7 +157,20 @@ class Benchmark(object):
         for row in table:
             lines.append(','.join(row))
         return os.linesep.join(lines)
-    
+
+    def __asPlain(self, header, table):
+        maxSize = self.__columnWidths(header, table)
+        lines = []
+        # Output header in bold font.
+        bold = '\033[1m'
+        endbold = '\033[0m'
+        head = [string.rjust(v, maxSize[i]) for i, v in enumerate(header)]
+        lines.append(bold + '  '.join(head) + endbold)
+        for table_row in table:
+            row = [string.rjust(v, maxSize[i]) for i, v in enumerate(table_row)]
+            lines.append('  '.join(row))
+        return os.linesep.join(lines)
+
     def __columnWidths(self, header, table):
         sizes = []
         for h in header:
@@ -199,5 +212,7 @@ class Benchmark(object):
             return self.__asMarkdown(header, reducedTable)
         elif format.lower() in ['csv', 'comma']:
             return self.__asCsv(header, reducedTable)
+        elif format.lower() in ['plain']:
+            return self.__asPlain(header, reducedTable)
         else:
             return self.__asRst(header, reducedTable)
