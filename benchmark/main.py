@@ -10,14 +10,15 @@ import platform
 import os
 import sys
 
+
 class BenchmarkProgram(object):
-    
+
     def __init__(self, module="__main__", **kwargs):
         if isinstance(module, basestring):
             self.module = __import__(module)
-        
+
         benchmarks = self.loadFromModule(self.module)
-        
+
         totalRuns = 0
         objects = []
         for obj in benchmarks:
@@ -25,13 +26,16 @@ class BenchmarkProgram(object):
             obj.run()
             objects.append(obj)
             totalRuns += obj.getTotalRuns()
-        
-        title = 'Benchmark Report'
-        info = 'Each of the above %s runs were run in random, non-consecutive order by' % str(totalRuns)
+
+        title = kwargs.get('title', 'Benchmark Report')
+        info = "Total runs: %d run in arbitrary order" % totalRuns + os.linesep
+        info += "Python version: %s" % platform.python_version() + os.linesep
+        info += "System: %s %s %s" % (platform.machine(),
+                                      platform.system(),
+                                      platform.release()) + os.linesep
+        info += "Version: %s" % "benchmark v" + __VERSION__ + os.linesep
+        info += "Date: %s" % time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
         info += os.linesep
-        info += '`benchmark` v' + __VERSION__ + ' (http://jspi.es/benchmark) with Python ' + platform.python_version()
-        info += os.linesep
-        info += '%s-%s-%s on %s' % (platform.system(), platform.release(), platform.machine(), time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())) + '.'
         
         sys.stdout.write(self.printMarkdown(objects, title, info, **kwargs))
     
