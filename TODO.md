@@ -1,0 +1,2 @@
+- [ ] Compute median
+- [ ] Profile memory usage of each benchmark
